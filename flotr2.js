@@ -4564,7 +4564,7 @@ var
   _ = Flotr._;
 
 Flotr.defaultPieLabelFormatter = function (total, value) {
-  value ? ((100 * value / total).toFixed(2)+'%') : null;
+  return (100 * value / total).toFixed(2)+'%';
 };
 
 Flotr.addType('pie', {
@@ -4589,6 +4589,8 @@ Flotr.addType('pie', {
       return;
     }
 
+    // TODO 3D charts what?
+
     var
       data          = options.data,
       context       = options.context,
@@ -4603,10 +4605,10 @@ Flotr.addType('pie', {
       fill          = options.fill,
       fillStyle     = options.fillStyle,
       radius        = Math.min(canvas.width, canvas.height) * sizeRatio / 2,
-      value         = data[0] ? data[0][1] : null,
+      value         = (data[0] != undefined) ? data[0][1] : null,
       html          = [],
       vScale        = 1,//Math.cos(series.pie.viewAngle);
-      measure       = value ? (Math.PI * 2 * value / this.total) : null,
+      measure       = Math.PI * 2 * value / this.total,
       startAngle    = this.startAngle || (2 * Math.PI * options.startAngle), // TODO: this initial startAngle is already in radians (fixing will be test-unstable)
       endAngle      = startAngle + measure,
       bisection     = startAngle + measure / 2,
@@ -4672,8 +4674,6 @@ Flotr.addType('pie', {
     }
     
     context.restore();
-
-    // console.log(this.slices);
 
     // New start angle
     this.startAngle = endAngle;
