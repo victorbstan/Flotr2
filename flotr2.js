@@ -4564,7 +4564,7 @@ var
   _ = Flotr._;
 
 Flotr.defaultPieLabelFormatter = function (total, value) {
-  return (100 * value / total).toFixed(2)+'%';
+  value ? ((100 * value / total).toFixed(2)+'%') : null;
 };
 
 Flotr.addType('pie', {
@@ -4585,7 +4585,9 @@ Flotr.addType('pie', {
 
   draw : function (options) {
 
-    // TODO 3D charts what?
+    if (!options.data[0]) {
+      return;
+    }
 
     var
       data          = options.data,
@@ -4601,10 +4603,10 @@ Flotr.addType('pie', {
       fill          = options.fill,
       fillStyle     = options.fillStyle,
       radius        = Math.min(canvas.width, canvas.height) * sizeRatio / 2,
-      value         = data[0][1],
+      value         = data[0] ? data[0][1] : null,
       html          = [],
       vScale        = 1,//Math.cos(series.pie.viewAngle);
-      measure       = Math.PI * 2 * value / this.total,
+      measure       = value ? (Math.PI * 2 * value / this.total) : null,
       startAngle    = this.startAngle || (2 * Math.PI * options.startAngle), // TODO: this initial startAngle is already in radians (fixing will be test-unstable)
       endAngle      = startAngle + measure,
       bisection     = startAngle + measure / 2,
@@ -4670,6 +4672,8 @@ Flotr.addType('pie', {
     }
     
     context.restore();
+
+    // console.log(this.slices);
 
     // New start angle
     this.startAngle = endAngle;
@@ -4758,9 +4762,7 @@ Flotr.addType('pie', {
     context.restore();
   },
   extendYRange : function (axis, data) {
-    if(data[0] != undefined) {
-      this.total = (this.total || 0) + data[0][1];
-    }
+    (data[0] != undefined) ? (this.total = (this.total || 0) + data[0][1]) : null;
   }
 });
 })();
